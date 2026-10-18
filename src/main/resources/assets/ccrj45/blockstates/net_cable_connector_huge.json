@@ -1,0 +1,16 @@
+{
+  "multipart": [
+    { "when": { "facing": "up", "horizontal_facing": "north" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge" } },
+    { "when": { "facing": "up", "horizontal_facing": "south" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "y": 180 } },
+    { "when": { "facing": "up", "horizontal_facing": "east" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "y": 270 } },
+    { "when": { "facing": "up", "horizontal_facing": "west" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "y": 90 } },
+    { "when": { "facing": "down", "horizontal_facing": "north" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "x": 180 } },
+    { "when": { "facing": "down", "horizontal_facing": "south" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "x": 180, "y": 180 } },
+    { "when": { "facing": "down", "horizontal_facing": "east" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "x": 180, "y": 270 } },
+    { "when": { "facing": "down", "horizontal_facing": "west" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "x": 180, "y": 90 } },
+    { "when": { "facing": "north" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "x": 90 } },
+    { "when": { "facing": "south" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "x": 90, "y": 180 } },
+    { "when": { "facing": "west" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "x": 90, "y": 270 } },
+    { "when": { "facing": "east" }, "apply": { "model": "ccrj45:block/net_cable_connector_huge", "x": 90, "y": 90 } }
+  ]
+}

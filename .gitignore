@@ -1,0 +1,39 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# vscode
+.vscode
+
+# other
+eclipse
+run
+runs
+run-data
+
+repo
+dist
+gitthing
+
+# dumps and references
+companion_temp
+dan200
+dev
+mezz
+references
+sable_temp

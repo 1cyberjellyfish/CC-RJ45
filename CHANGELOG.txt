@@ -1,0 +1,62 @@
+=== CC:RJ45 Changelog ===
+
+--- v2.0.0 - Refactoring ---
+Удалённые блоки/предметы:
+  - Net Cable Hub (хаб) — удалён вместе с периферией modem/peripheral_hub
+  - Holo Emitter (holographic_base) — удалён вместе с hologram периферией
+  - Optical Entity Sensor — удалён (переехал в другой мод)
+  - Directional Optical Sensor — удалён (переехал в другой мод)
+  - Entity Radar Sensor — удалён (переехал в другой мод)
+  - Holographic Core — удалён (бесполезен без Holo Emitter)
+
+Удалённые интеграции:
+  - Create Big Cannons (CBC) — удалена рефлексивная интеграция
+  - PocketNet API — удалён (pocket-функционал)
+  - Create, Flywheel, Ponder, Registrate зависимости удалены из build.gradle
+
+Пофиксенные костыли:
+  - NetCableConnectorBlockEntity.getLevel() — больше не кидает NPE,
+    возвращает null как обычный BlockEntity
+  - NetCableConnectorBlockEntity.setRemoved() — исключения логируются,
+    а не проглатываются молча
+  - Удалены мёртвые modem-свойства (HAS_MODEM, MODEM_FACING, MODEM_ON)
+    из NetCableConnectorBlock — коннектор теперь чисто сетевой блок
+  - Удалён мусорный tmp_cable.class из run/
+  - Удалены пустые/осиротевшие директории ресурсов
+
+Оставлено:
+  - Net Cable Connector — блок, расширяющий проводную сеть CC:Tweaked
+  - Net Cable — предмет-линковщик
+  - Long Net Cable — компонент крафта
+  - Отрисовка кабелей (Catenary curves, 3D-трубка вместо плоской ленты)
+
+--- v2.1.0 - Redstone Cassette, Hard Drive, Disk Shelf ---
+Новые предметы:
+  - Redstone Cassette — 512KB хранилище данных, читается в Disk Drive (CC:Tweaked)
+  - Hard Drive — 1MB хранилище данных (по умолчанию), читается в Disk Drive
+  - Оба предмета красятся через crafting_special_armoredye (аналогично флоппи из CC)
+  - Цвет по умолчанию: белый (0xFFFFFF)
+
+Улучшение Hard Drive (Smithing Table):
+  - 1MB → 2MB: аметистовый осколок (шаблон) + алмаз
+  - 2MB → 4MB: незеритовый шаблон улучшения + незеритовый слиток
+  - Ёмкость хранится в Data Component, сохраняется при перекраске
+
+Новые блоки:
+  - Disk Shelf — стеллаж на 6 слотов (2×3), ванильная модель блока (куб)
+  - Хранит кассеты и жёсткие диски
+  - Поведение аналогично ванильной книжной полке (ПКМ = положить/достать)
+  - Компаратор выдаёт сигнал по количеству заполненных слотов (1–6)
+  - BER отрисовка содержимого: shelf_casette / shelf_disk оверлеи
+    на передней стороне блока с окраской по DyedItemColor
+  - Без периферийного поведения (не является периферией)
+
+Технические изменения:
+  - DiskMount — in-memory WritableMount с NBT-сериализацией
+  - ModDataComponents: mount_data (CompoundTag) + hard_drive_capacity (long)
+  - MediaCapability зарегистрирован на Cassette и Hard Drive
+  - DiskShelfRenderer — BER с tinting оверлеев
+  - HardDriveUpgradeRecipe — кастомный RecipeSerializer для smithing апгрейдов
+  - JEI добавлен как localRuntime dependency для dev-окружения
+  - Текстуры: assets/ccrj45/textures/{block,item}/
+  - build.gradle: добавлен maven BlameJared для JEI

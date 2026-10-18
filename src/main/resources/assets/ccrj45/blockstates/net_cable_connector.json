@@ -1,0 +1,10 @@
+{
+  "multipart": [
+    { "when": { "facing": "down" }, "apply": { "model": "ccrj45:block/net_cable_connector", "x": 180 } },
+    { "when": { "facing": "up" }, "apply": { "model": "ccrj45:block/net_cable_connector" } },
+    { "when": { "facing": "north" }, "apply": { "model": "ccrj45:block/net_cable_connector", "x": 90 } },
+    { "when": { "facing": "south" }, "apply": { "model": "ccrj45:block/net_cable_connector", "x": 90, "y": 180 } },
+    { "when": { "facing": "west" }, "apply": { "model": "ccrj45:block/net_cable_connector", "x": 90, "y": 270 } },
+    { "when": { "facing": "east" }, "apply": { "model": "ccrj45:block/net_cable_connector", "x": 90, "y": 90 } }
+  ]
+}

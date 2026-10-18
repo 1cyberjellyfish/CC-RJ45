@@ -1,0 +1,258 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.148' apply false
+    id 'net.fabricmc.fabric-loom' version '1.19.1' apply false
+    id 'net.fabricmc.fabric-loom-remap' version '1.19.1' apply false
+    id 'idea'
+}
+
+if (project == rootProject) {
+    tasks.named('wrapper', Wrapper).configure {
+        distributionType = Wrapper.DistributionType.BIN
+    }
+}
+
+version = mod_version
+group = mod_group_id
+
+boolean is26 = project.name.startsWith('26.2')
+boolean isFabric = project.name.endsWith('-fabric')
+boolean isNeoForge = project.name.endsWith('-neoforge')
+
+tasks.named('processResources', ProcessResources).configure {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    var mcVer = is26 ? '26.2' : (project.findProperty('minecraft_version') ?: '1.21.1')
+    if (isFabric) {
+        exclude 'META-INF/neoforge.mods.toml'
+        var replaceProps = [
+            'minecraft_version': mcVer,
+            'mod_id': project.mod_id,
+            'mod_name': project.mod_name,
+            'mod_version': project.mod_version,
+            'mod_license': project.mod_license
+        ]
+        inputs.properties replaceProps
+        filesMatching('fabric.mod.json') {
+            expand replaceProps
+        }
+    } else if (isNeoForge) {
+        exclude 'fabric.mod.json'
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from sourceSets.main.output
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.squiddev.cc"
+        content {
+            includeGroup("cc.tweaked")
+        }
+    }
+    maven {
+        url "https://api.modrinth.com/maven"
+        content {
+            includeGroup("maven.modrinth")
+        }
+    }
+}
+
+base {
+    archivesName = "${mod_id}-${project.name}"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(is26 ? 25 : 21)
+
+if (isNeoForge) {
+    apply plugin: 'net.neoforged.moddev'
+
+    neoForge {
+        version = project.findProperty('neo_version') ?: (is26 ? '26.2.0.93' : '21.1.228')
+
+        if (!is26) {
+            parchment {
+                mappingsVersion = project.parchment_mappings_version
+                minecraftVersion = project.parchment_minecraft_version
+            }
+        }
+
+        runs {
+            client {
+                client()
+                systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            }
+
+            if (!is26) {
+                server {
+                    server()
+                    programArgument '--nogui'
+                    systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+                }
+
+                data {
+                    data()
+                    programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+                }
+            } else {
+                clientData {
+                    clientData()
+                    programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+                }
+            }
+
+            configureEach {
+                systemProperty 'forge.logging.markers', 'REGISTRIES'
+                logLevel = org.slf4j.event.Level.DEBUG
+            }
+        }
+
+        mods {
+            "${mod_id}" {
+                sourceSet(sourceSets.main)
+            }
+        }
+    }
+
+    configurations {
+        runtimeClasspath.extendsFrom localRuntime
+    }
+
+    dependencies {
+        if (!is26) {
+            def sableLibDir = file("$rootDir/build/sable-libs")
+            def sableCompanionJar = file("$sableLibDir/sable-companion.jar")
+            if (!sableCompanionJar.exists()) {
+                try {
+                    def sableJar = configurations.detachedConfiguration(dependencies.create("maven.modrinth:sable:$sable_modrinth_version")).singleFile
+                    sableLibDir.mkdirs()
+                    copy {
+                        from zipTree(sableJar).matching { include "META-INF/jarjar/sable-companion*.jar" }
+                        into sableLibDir
+                        eachFile { path = "sable-companion.jar" }
+                        includeEmptyDirs = false
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            compileOnly("maven.modrinth:sable:$sable_modrinth_version")
+            compileOnly fileTree(dir: sableLibDir, include: ["*.jar"])
+            compileOnly("maven.modrinth:create-aeronautics:$create_aeronautics_modrinth_version")
+            compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-core-api:$cc_tweaked_version")
+            compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-forge-api:$cc_tweaked_version")
+            compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-forge:$cc_tweaked_version")
+            runtimeOnly("cc.tweaked:cc-tweaked-$minecraft_version-forge:$cc_tweaked_version")
+            localRuntime("maven.modrinth:jei:$jei_modrinth_version")
+            localRuntime("maven.modrinth:create:$create_modrinth_version")
+            localRuntime("maven.modrinth:sable:$sable_modrinth_version")
+            localRuntime("maven.modrinth:create-aeronautics:$create_aeronautics_modrinth_version")
+        } else {
+            compileOnly("cc.tweaked:cc-tweaked-26.2-core-api:1.120.2")
+            compileOnly("cc.tweaked:cc-tweaked-26.2-forge-api:1.120.2")
+            compileOnly("cc.tweaked:cc-tweaked-26.2-forge:1.120.2")
+            runtimeOnly("cc.tweaked:cc-tweaked-26.2-forge:1.120.2")
+        }
+    }
+} else if (isFabric) {
+    if (is26) {
+        apply plugin: 'net.fabricmc.fabric-loom'
+    } else {
+        apply plugin: 'net.fabricmc.fabric-loom-remap'
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${project.findProperty('minecraft_version') ?: '1.21.1'}"
+        compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+        if (!is26) {
+            mappings loom.officialMojangMappings()
+            modImplementation "net.fabricmc:fabric-loader:${project.findProperty('fabric_loader_version') ?: '0.16.9'}"
+            modImplementation "net.fabricmc.fabric-api:fabric-api:${project.findProperty('fabric_api_version') ?: '0.106.1+1.21.1'}"
+            modCompileOnly("cc.tweaked:cc-tweaked-$minecraft_version-core-api:$cc_tweaked_version")
+            modCompileOnly("cc.tweaked:cc-tweaked-$minecraft_version-fabric-api:$cc_tweaked_version")
+            modCompileOnly("cc.tweaked:cc-tweaked-$minecraft_version-fabric:$cc_tweaked_version")
+            modLocalRuntime("cc.tweaked:cc-tweaked-$minecraft_version-fabric:$cc_tweaked_version")
+        } else {
+            implementation "net.fabricmc:fabric-loader:${project.findProperty('fabric_loader_version') ?: '0.19.5'}"
+            implementation "net.fabricmc.fabric-api:fabric-api:${project.findProperty('fabric_api_version') ?: '0.161.0+26.2'}"
+            implementation("cc.tweaked:cc-tweaked-26.2-core-api:1.120.2")
+            implementation("cc.tweaked:cc-tweaked-26.2-fabric-api:1.120.2")
+            implementation("cc.tweaked:cc-tweaked-26.2-fabric:1.120.2")
+        }
+    }
+
+    if (!is26) {
+        tasks.named('remapJar', net.fabricmc.loom.task.RemapJarTask).configure {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            from zipTree(tasks.named('jar').flatMap { it.archiveFile })
+        }
+    }
+}
+
+var collectDir = rootProject.file('dist')
+
+tasks.register('collectJar', Copy) {
+    group = 'build'
+    description = 'Copies the built mod jar to root dist/ directory'
+    destinationDir = collectDir
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    if (isFabric) {
+        if (is26) {
+            from tasks.named('jar')
+        } else {
+            from tasks.named('remapJar')
+        }
+    } else if (isNeoForge) {
+        from tasks.named('jar')
+    }
+}
+
+tasks.named('assemble').configure {
+    finalizedBy 'collectJar'
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var mcVer = is26 ? '26.2' : (project.findProperty('minecraft_version') ?: '1.21.1')
+    var mcRange = project.findProperty('minecraft_version_range') ?: (is26 ? '[26.2]' : '[1.21.1]')
+    if (is26 && (mcRange == '[1.21.1]' || mcRange == null)) {
+        mcRange = '[26.2]'
+    }
+    var replaceProperties = [
+            minecraft_version      : mcVer,
+            minecraft_version_range: mcRange,
+            neo_version            : project.findProperty('neo_version') ?: (is26 ? '26.2.0.93' : '21.1.228'),
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            cc_tweaked_version     : cc_tweaked_version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from rootProject.file("src/main/templates")
+    into "build/generated/sources/modMetadata"
+}
+if (isNeoForge) {
+    sourceSets.main.resources.srcDir generateModMetadata
+    neoForge.ideSyncTask generateModMetadata
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

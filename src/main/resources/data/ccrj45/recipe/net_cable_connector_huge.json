@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "   ",
+    "CHC",
+    " S "
+  ],
+  "key": {
+    "C": { "item": "ccrj45:net_connector_cable" },
+    "H": { "item": "ccrj45:net_cable_hub" },
+    "S": { "item": "minecraft:stone" }
+  },
+  "result": {
+    "id": "ccrj45:net_cable_connector_huge",
+    "count": 1
+  }
+}

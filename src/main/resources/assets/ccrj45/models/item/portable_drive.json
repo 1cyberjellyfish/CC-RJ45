@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ccrj45:item/portable_drive",
+    "layer1": "ccrj45:item/portable_drive_color"
+  }
+}

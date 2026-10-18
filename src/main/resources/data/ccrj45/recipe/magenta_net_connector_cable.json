@@ -1,0 +1,16 @@
+{
+    "type":  "minecraft:crafting_shapeless",
+    "category":  "redstone",
+    "ingredients":  [
+                        {
+                            "tag":  "ccrj45:net_cables"
+                        },
+                        {
+                            "item":  "minecraft:magenta_dye"
+                        }
+                    ],
+    "result":  {
+                   "id":  "ccrj45:magenta_net_connector_cable",
+                   "count":  1
+               }
+}

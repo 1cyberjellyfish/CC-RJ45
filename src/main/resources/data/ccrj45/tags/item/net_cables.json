@@ -1,0 +1,22 @@
+{
+    "replace":  false,
+    "values":  [
+                   "ccrj45:net_connector_cable",
+                   "ccrj45:white_net_connector_cable",
+                   "ccrj45:orange_net_connector_cable",
+                   "ccrj45:magenta_net_connector_cable",
+                   "ccrj45:light_blue_net_connector_cable",
+                   "ccrj45:yellow_net_connector_cable",
+                   "ccrj45:lime_net_connector_cable",
+                   "ccrj45:pink_net_connector_cable",
+                   "ccrj45:gray_net_connector_cable",
+                   "ccrj45:light_gray_net_connector_cable",
+                   "ccrj45:cyan_net_connector_cable",
+                   "ccrj45:purple_net_connector_cable",
+                   "ccrj45:blue_net_connector_cable",
+                   "ccrj45:brown_net_connector_cable",
+                   "ccrj45:green_net_connector_cable",
+                   "ccrj45:red_net_connector_cable",
+                   "ccrj45:black_net_connector_cable"
+               ]
+}

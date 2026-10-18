@@ -1,0 +1,21 @@
+{
+    "type":  "minecraft:crafting_shaped",
+    "category":  "redstone",
+    "pattern":  [
+                    "ccc",
+                    "cgc",
+                    "ccc"
+                ],
+    "key":  {
+                "g":  {
+                          "item":  "minecraft:gold_ingot"
+                      },
+                "c":  {
+                          "item":  "computercraft:cable_magenta"
+                      }
+            },
+    "result":  {
+                   "id":  "ccrj45:magenta_net_connector_cable",
+                   "count":  1
+               }
+}
